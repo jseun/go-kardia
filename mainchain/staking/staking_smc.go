@@ -299,10 +299,7 @@ func Apply(logger log.Logger, bc vm.ChainContext, statedb *state.StateDB, header
 }
 
 // CreateStakingContract ...
-func (s *StakingSmcUtil) CreateStakingContract(statedb *state.StateDB,
-	header *types.Header,
-	cfg kvm.Config) error {
-
+func (s *StakingSmcUtil) CreateStakingContract(statedb *state.StateDB, header *types.Header, cfg kvm.Config) error {
 	msg := types.NewMessage(
 		configs.GenesisDeployerAddr,
 		nil,

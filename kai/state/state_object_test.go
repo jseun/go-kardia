@@ -214,16 +214,16 @@ func compareStateObjects(so0, so1 *stateObject, t *testing.T) {
 		t.Fatalf("Code mismatch: have %v, want %v", so0.code, so1.code)
 	}
 
-	if len(so1.cachedStorage) != len(so0.cachedStorage) {
-		t.Errorf("Storage size mismatch: have %d, want %d", len(so1.cachedStorage), len(so0.cachedStorage))
+	if len(so1.originStorage) != len(so0.originStorage) {
+		t.Errorf("Storage size mismatch: have %d, want %d", len(so1.originStorage), len(so0.originStorage))
 	}
-	for k, v := range so1.cachedStorage {
-		if so0.cachedStorage[k] != v {
-			t.Errorf("Storage key %x mismatch: have %v, want %v", k, so0.cachedStorage[k], v)
+	for k, v := range so1.originStorage {
+		if so0.originStorage[k] != v {
+			t.Errorf("Storage key %x mismatch: have %v, want %v", k, so0.originStorage[k], v)
 		}
 	}
-	for k, v := range so0.cachedStorage {
-		if so1.cachedStorage[k] != v {
+	for k, v := range so0.originStorage {
+		if so1.originStorage[k] != v {
 			t.Errorf("Storage key %x mismatch: have %v, want none.", k, v)
 		}
 	}
