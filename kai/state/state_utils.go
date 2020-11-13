@@ -44,7 +44,6 @@ type DumpAccount struct {
 	CodeHash string                 `json:"codeHash"`
 	Code     string                 `json:"code,omitempty"`
 	Storage  map[common.Hash]string `json:"storage,omitempty"`
-	Address  *common.Address        `json:"address,omitempty"` // Address only present in iterative (line-by-line) mode
 }
 
 type Dump struct {
@@ -93,9 +92,6 @@ func (d iterativeDump) OnAccount(addr common.Address, account DumpAccount) {
 		CodeHash: account.CodeHash,
 		Code:     account.Code,
 		Storage:  account.Storage,
-	}
-	if addr != (common.Address{}) {
-		dumpAccount.Address = &addr
 	}
 	d.Encode(dumpAccount)
 }

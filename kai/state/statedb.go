@@ -368,25 +368,18 @@ func (sdb *StateDB) getDeletedStateObject(addr common.Address) *stateObject {
 		return obj
 	}
 	// If no live objects are available, attempt to use snapshots
-	var (
-		data *Account
-		err  error
-	)
-	// If snapshot unavailable or reading from it failed, load from the database
+	enc, err := sdb.trie.TryGet(addr.Bytes())
 	if err != nil {
-		enc, err := sdb.trie.TryGet(addr.Bytes())
-		if err != nil {
-			sdb.setError(fmt.Errorf("getDeleteStateObject (%x) error: %v", addr.Bytes(), err))
-			return nil
-		}
-		if len(enc) == 0 {
-			return nil
-		}
-		data = new(Account)
-		if err := rlp.DecodeBytes(enc, data); err != nil {
-			log.Error("Failed to decode state object", "addr", addr, "err", err)
-			return nil
-		}
+		sdb.setError(fmt.Errorf("getDeleteStateObject (%x) error: %v", addr.Bytes(), err))
+		return nil
+	}
+	if len(enc) == 0 {
+		return nil
+	}
+	data := new(Account)
+	if err := rlp.DecodeBytes(enc, &data); err != nil {
+		log.Error("Failed to decode state object", "addr", addr, "err", err)
+		return nil
 	}
 	// Insert into the live set
 	obj := newObject(sdb, addr, *data)
