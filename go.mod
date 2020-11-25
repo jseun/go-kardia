@@ -3,6 +3,7 @@ module github.com/kardiachain/go-kardiamain
 go 1.14
 
 require (
+	github.com/VictoriaMetrics/fastcache v1.5.7
 	github.com/allegro/bigcache v1.2.1 // indirect
 	github.com/aristanetworks/goarista v0.0.0-20190712234253-ed1100a1c015
 	github.com/btcsuite/btcd v0.20.1-beta
@@ -17,6 +18,7 @@ require (
 	github.com/go-stack/stack v1.8.0
 	github.com/gogo/protobuf v1.3.1
 	github.com/golang/protobuf v1.4.0
+	github.com/golang/snappy v0.0.2-0.20200707131729-196ae77b8a26
 	github.com/google/cel-go v0.3.2
 	github.com/google/uuid v1.1.1 // indirect
 	github.com/gorilla/mux v1.7.3
@@ -27,6 +29,7 @@ require (
 	github.com/libp2p/go-buffer-pool v0.0.2
 	github.com/mattn/go-colorable v0.1.2 // indirect
 	github.com/minio/highwayhash v1.0.0
+	github.com/olekukonko/tablewriter v0.0.2-0.20190409134802-7e037d187b0c
 	github.com/pebbe/zmq4 v1.0.0
 	github.com/petermattis/goid v0.0.0-20180202154549-b0b1615b78e5 // indirect
 	github.com/pkg/errors v0.9.1
@@ -37,6 +40,7 @@ require (
 	github.com/sasha-s/go-deadlock v0.2.0
 	github.com/shirou/gopsutil v2.20.5+incompatible
 	github.com/status-im/keycard-go v0.0.0-20190424133014-d95853db0f48 // indirect
+	github.com/steakknife/bloomfilter v0.0.0-20180922174646-6819c0d2a570
 	github.com/stretchr/testify v1.5.1
 	github.com/syndtr/goleveldb v1.0.1-0.20190923125748-758128399b1d
 	github.com/tendermint/tendermint v0.33.8

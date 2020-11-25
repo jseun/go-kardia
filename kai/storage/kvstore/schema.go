@@ -48,17 +48,18 @@ var (
 	seenCommitPrefix = []byte("sm") // seenCommitPrefix + num -> seen commit
 	appHashPrefix    = []byte("ah") // appHashPrefix + num -> app hash
 
-	// TODO(namdoh@): The hashKey is primarily used for persistently store a tx hash in db, so we
-	// quickly check if a tx has been seen in the past. When the scope of this key extends beyond
-	// tx hash, it's probably cleaner to refactor this into a separate API (instead of grouping
-	// it under chaindb).
 	hashPrefix   = []byte("hash")   // hashPrefix + hash -> hash key
 	txHashPrefix = []byte("txHash") // txHashPrefix + hash -> hash key
 
-	configPrefix          = []byte("kardia-config-") // config prefix for the db
-	txLookupPrefix        = []byte("l")              // txLookupPrefix + hash -> transaction/receipt lookup metadata
-	dualEventLookupPrefix = []byte("de")             // dualEventLookupPrefix + hash -> dual's event lookup metadata
-	bloomBitsPrefix       = []byte("B")              // bloomBitsPrefix + bit (uint16 big endian) + section (uint64 big endian) + hash -> bloom bits
+	snapshotRootKey       = []byte("sr") // snapshotRootKey tracks the hash of the last snapshot.
+	snapshotJournalKey    = []byte("sj") // snapshotJournalKey tracks the in-memory diff layers across restarts.
+	SnapshotAccountPrefix = []byte("a")  // SnapshotAccountPrefix + account hash -> account trie value
+	SnapshotStoragePrefix = []byte("s")  // SnapshotStoragePrefix + account hash + storage hash -> storage trie value
+
+	configPrefix          = []byte("kai-config-") // config prefix for the db
+	txLookupPrefix        = []byte("l")           // txLookupPrefix + hash -> transaction/receipt lookup metadata
+	dualEventLookupPrefix = []byte("de")          // dualEventLookupPrefix + hash -> dual's event lookup metadata
+	bloomBitsPrefix       = []byte("B")           // bloomBitsPrefix + bit (uint16 big endian) + section (uint64 big endian) + hash -> bloom bits
 
 	eventPrefix       = []byte("event")  // event prefix + smartcontract address + method
 	eventsPrefix      = []byte("events") // event prefix + smart contract address
@@ -147,6 +148,21 @@ func blockInfoKey(height uint64, hash common.Hash) []byte {
 // commitKey = commitPrefix + ":" + height
 func commitKey(height uint64) []byte {
 	return append(commitPrefix, encodeBlockHeight(height)...)
+}
+
+// accountSnapshotKey = SnapshotAccountPrefix + hash
+func accountSnapshotKey(hash common.Hash) []byte {
+	return append(SnapshotAccountPrefix, hash.Bytes()...)
+}
+
+// storageSnapshotKey = SnapshotStoragePrefix + account hash + storage hash
+func storageSnapshotKey(accountHash, storageHash common.Hash) []byte {
+	return append(append(SnapshotStoragePrefix, accountHash.Bytes()...), storageHash.Bytes()...)
+}
+
+// storageSnapshotsKey = SnapshotStoragePrefix + account hash + storage hash
+func storageSnapshotsKey(accountHash common.Hash) []byte {
+	return append(SnapshotStoragePrefix, accountHash.Bytes()...)
 }
 
 // configKey = configPrefix + hash

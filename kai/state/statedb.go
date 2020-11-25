@@ -25,6 +25,7 @@ import (
 	"sort"
 	"sync"
 
+	"github.com/kardiachain/go-kardiamain/kai/state/snapshot"
 	"github.com/kardiachain/go-kardiamain/lib/common"
 	"github.com/kardiachain/go-kardiamain/lib/crypto"
 	"github.com/kardiachain/go-kardiamain/lib/log"
@@ -57,6 +58,12 @@ type StateDB struct {
 	db   Database
 	trie Trie
 
+	snaps         *snapshot.Tree
+	snap          snapshot.Snapshot
+	snapDestructs map[common.Hash]struct{}
+	snapAccounts  map[common.Hash][]byte
+	snapStorage   map[common.Hash]map[common.Hash][]byte
+
 	// This map holds 'live' objects, which will get modified while processing a state transition.
 	stateObjects      map[common.Address]*stateObject
 	stateObjectsDirty map[common.Address]struct{}
@@ -88,21 +95,30 @@ type StateDB struct {
 }
 
 // Create a new state from a given trie.
-func New(logger log.Logger, root common.Hash, db Database) (*StateDB, error) {
+func New(logger log.Logger, root common.Hash, db Database, snaps *snapshot.Tree) (*StateDB, error) {
 	tr, err := db.OpenTrie(root)
 	if err != nil {
 		return nil, err
 	}
-	return &StateDB{
+	sdb := &StateDB{
 		logger:            logger,
 		db:                db,
 		trie:              tr,
+		snaps:             snaps,
 		stateObjects:      make(map[common.Address]*stateObject),
 		stateObjectsDirty: make(map[common.Address]struct{}),
 		logs:              make(map[common.Hash][]*types.Log),
 		preimages:         make(map[common.Hash][]byte),
 		journal:           newJournal(),
-	}, nil
+	}
+	if sdb.snaps != nil {
+		if sdb.snap = sdb.snaps.Snapshot(root); sdb.snap != nil {
+			sdb.snapDestructs = make(map[common.Hash]struct{})
+			sdb.snapAccounts = make(map[common.Hash][]byte)
+			sdb.snapStorage = make(map[common.Hash]map[common.Hash][]byte)
+		}
+	}
+	return sdb, nil
 }
 
 // Prepare sets the current transaction hash and index and block hash which is

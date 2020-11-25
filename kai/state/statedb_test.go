@@ -23,7 +23,6 @@ import (
 	"testing"
 
 	"github.com/kardiachain/go-kardiamain/kai/kaidb/memorydb"
-
 	"github.com/kardiachain/go-kardiamain/lib/common"
 	"github.com/kardiachain/go-kardiamain/lib/log"
 )
@@ -33,7 +32,7 @@ import (
 func TestUpdateLeaks(t *testing.T) {
 	// Create an empty state database
 	db := memorydb.New()
-	state, _ := New(log.New(), common.Hash{}, NewDatabase(db))
+	state, _ := New(log.New(), common.Hash{}, NewDatabase(db), nil)
 
 	// Update it with some accounts
 	for i := byte(0); i < 255; i++ {
@@ -61,8 +60,8 @@ func TestIntermediateLeaks(t *testing.T) {
 	// Create two state databases, one transitioning to the final state, the other final from the beginning
 	transDb := memorydb.New()
 	finalDb := memorydb.New()
-	transState, _ := New(log.New(), common.Hash{}, NewDatabase(transDb))
-	finalState, _ := New(log.New(), common.Hash{}, NewDatabase(finalDb))
+	transState, _ := New(log.New(), common.Hash{}, NewDatabase(transDb), nil)
+	finalState, _ := New(log.New(), common.Hash{}, NewDatabase(finalDb), nil)
 
 	modify := func(state *StateDB, addr common.Address, i, tweak byte) {
 		state.AddBalance(addr, big.NewInt(int64(11*i)+int64(tweak)))
@@ -117,7 +116,7 @@ func TestIntermediateLeaks(t *testing.T) {
 // https://github.com/ethereum/go-ethereum/pull/15549.
 func TestCopy(t *testing.T) {
 	// Create a random state test to copy and modify "independently"
-	orig, _ := New(log.New(), common.Hash{}, NewDatabase(memorydb.New()))
+	orig, _ := New(log.New(), common.Hash{}, NewDatabase(memorydb.New()), nil)
 
 	for i := byte(0); i < 255; i++ {
 		obj := orig.GetOrNewStateObject(common.BytesToAddress([]byte{i}))
@@ -165,7 +164,7 @@ func TestCopy(t *testing.T) {
 // TestCopyOfCopy tests that modified objects are carried over to the copy, and the copy of the copy.
 // See https://github.com/ethereum/go-ethereum/pull/15225#issuecomment-380191512
 func TestCopyOfCopy(t *testing.T) {
-	sdb, _ := New(log.New(), common.Hash{}, NewDatabase(memorydb.New()))
+	sdb, _ := New(log.New(), common.Hash{}, NewDatabase(memorydb.New()), nil)
 	addr := common.HexToAddress("aaaa")
 	sdb.AddBalance(addr, big.NewInt(42))
 
